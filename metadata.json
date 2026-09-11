@@ -1,0 +1,6 @@
+{
+  "name": "V-WAN - Virtual WAN Platform",
+  "description": "Cross-platform virtual WAN & VLAN platform for gaming, P2P file sharing, and remote access with WireGuard tunnels, public room directory, and DERP relay.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
