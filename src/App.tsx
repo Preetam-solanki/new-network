@@ -11,13 +11,15 @@ import { WireGuardConfigModal } from './components/WireGuardConfigModal';
 import { AclSettingsModal } from './components/AclSettingsModal';
 import { CreateNetworkModal } from './components/CreateNetworkModal';
 import { JoinNetworkModal } from './components/JoinNetworkModal';
+import { WanHostFileModal } from './components/WanHostFileModal';
 import { MobileFrame } from './components/MobileFrame';
 import { 
   Network, 
   Peer, 
   LanGameBroadcast, 
   SharedFile, 
-  ClientPlatform 
+  ClientPlatform,
+  UserRole
 } from './types';
 import { 
   loadNetworks, 
@@ -30,6 +32,8 @@ import {
   saveSharedFiles,
   getStoredClientPlatform,
   setStoredClientPlatform,
+  getStoredUserRole,
+  setStoredUserRole,
   resetToDefaults
 } from './storage';
 import { generateWireGuardKey } from './utils/wireguard';
@@ -58,6 +62,7 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState<'networks' | 'directory' | 'lan_games' | 'files' | 'architecture' | 'acls'>('networks');
   const [clientPlatform, setClientPlatformState] = useState<ClientPlatform>(getStoredClientPlatform);
+  const [userRole, setUserRoleState] = useState<UserRole>(getStoredUserRole);
   const [isMobilePreview, setIsMobilePreview] = useState(false);
 
   // Modals state
@@ -66,6 +71,7 @@ export default function App() {
   const [pingPeer, setPingPeer] = useState<Peer | null>(null);
   const [configNetwork, setConfigNetwork] = useState<Network | null>(null);
   const [aclNetwork, setAclNetwork] = useState<Network | null>(null);
+  const [wanHostNetwork, setWanHostNetwork] = useState<Network | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
 
   // Sync state to local persistence
@@ -94,6 +100,20 @@ export default function App() {
     setClientPlatformState(os);
     setStoredClientPlatform(os);
     showNotification(`Client platform switched to ${os.toUpperCase()}`);
+  };
+
+  const setUserRole = (role: UserRole) => {
+    setUserRoleState(role);
+    setStoredUserRole(role);
+    showNotification(
+      role === 'admin'
+        ? 'Privileges elevated: Full Administrator access to WAN Host File & all LAN storage.'
+        : 'Switched to Standard User: Restricted to own LAN files; WAN Host File locked.'
+    );
+  };
+
+  const handleToggleUserRole = () => {
+    setUserRole(userRole === 'admin' ? 'user' : 'admin');
   };
 
   const selectedNetwork = networks.find((n) => n.id === selectedNetworkId) || networks[0];
@@ -316,12 +336,14 @@ export default function App() {
             <NetworkList
               networks={networks}
               selectedNetworkId={selectedNetworkId}
+              userRole={userRole}
               onSelectNetwork={setSelectedNetworkId}
               onToggleConnect={handleToggleConnect}
               onOpenCreate={() => setCreateModalOpen(true)}
               onOpenJoin={() => setJoinModalOpen(true)}
               onOpenConfig={(net) => setConfigNetwork(net)}
               onOpenAcl={(net) => setAclNetwork(net)}
+              onOpenWanHosts={(net) => setWanHostNetwork(net)}
               onDeleteNetwork={handleDeleteNetwork}
             />
           </div>
@@ -332,9 +354,11 @@ export default function App() {
               <PeersView
                 network={selectedNetwork}
                 peers={currentNetworkPeers}
+                userRole={userRole}
                 onOpenPing={(peer) => setPingPeer(peer)}
                 onOpenConfig={() => setConfigNetwork(selectedNetwork)}
                 onOpenAcl={() => setAclNetwork(selectedNetwork)}
+                onOpenWanHosts={() => setWanHostNetwork(selectedNetwork)}
               />
             ) : (
               <div className="bg-slate-900 border border-slate-800 rounded-xl p-12 text-center text-slate-400">
@@ -367,7 +391,13 @@ export default function App() {
           files={sharedFiles}
           networks={networks}
           selectedNetworkId={selectedNetworkId}
+          userRole={userRole}
           onUploadFile={handleUploadFile}
+          onDeleteFile={(id) => {
+            setSharedFiles((prev) => prev.filter((f) => f.id !== id));
+            showNotification('File removed from LAN share.');
+          }}
+          onSwitchToAdmin={() => setUserRole('admin')}
         />
       )}
 
@@ -407,6 +437,9 @@ export default function App() {
         networks={networks}
         clientPlatform={clientPlatform}
         setClientPlatform={setClientPlatform}
+        userRole={userRole}
+        onToggleUserRole={handleToggleUserRole}
+        onOpenWanHosts={() => setWanHostNetwork(selectedNetwork || networks[0])}
         isMobilePreview={isMobilePreview}
         setIsMobilePreview={setIsMobilePreview}
         onOpenCreate={() => setCreateModalOpen(true)}
@@ -436,6 +469,8 @@ export default function App() {
         <WireGuardConfigModal
           network={configNetwork}
           clientPlatform={clientPlatform}
+          userRole={userRole}
+          onOpenWanHosts={() => setWanHostNetwork(configNetwork)}
           onClose={() => setConfigNetwork(null)}
         />
       )}
@@ -445,6 +480,16 @@ export default function App() {
           network={aclNetwork}
           onSave={handleSaveAcl}
           onClose={() => setAclNetwork(null)}
+        />
+      )}
+
+      {wanHostNetwork && (
+        <WanHostFileModal
+          network={wanHostNetwork}
+          peers={peers[wanHostNetwork.id] || []}
+          userRole={userRole}
+          onSwitchToAdmin={() => setUserRole('admin')}
+          onClose={() => setWanHostNetwork(null)}
         />
       )}
 

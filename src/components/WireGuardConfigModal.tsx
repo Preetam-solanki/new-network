@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { X, Download, Copy, Check, QrCode, Shield, Terminal, Smartphone, Monitor } from 'lucide-react';
-import { Network, ClientPlatform } from '../types';
+import { X, Download, Copy, Check, QrCode, Shield, Terminal, Smartphone, Monitor, FileText, Lock } from 'lucide-react';
+import { Network, ClientPlatform, UserRole } from '../types';
 import { generateWgQuickConfig, generateQRCodeDataUrl } from '../utils/wireguard';
 
 interface WireGuardConfigModalProps {
   network: Network | null;
   clientPlatform: ClientPlatform;
+  userRole?: UserRole;
+  onOpenWanHosts?: () => void;
   onClose: () => void;
 }
 
 export const WireGuardConfigModal: React.FC<WireGuardConfigModalProps> = ({
   network,
   clientPlatform,
+  userRole,
+  onOpenWanHosts,
   onClose,
 }) => {
   const [copied, setCopied] = useState(false);
@@ -155,6 +159,25 @@ sudo wg-quick up ./${network.interfaceName}.conf`;
             <Monitor className="w-3.5 h-3.5" />
             <span>CLI Commands ({clientPlatform})</span>
           </button>
+
+          {onOpenWanHosts && (
+            <button
+              onClick={() => {
+                onClose();
+                onOpenWanHosts();
+              }}
+              className="ml-auto px-2.5 py-1.5 rounded-md bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-750 text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5"
+              title="Open WAN Master Host Resolution Table (Admin Only)"
+            >
+              <FileText className="w-3.5 h-3.5 text-emerald-400" />
+              <span>WAN Host File</span>
+              <span className={`text-[9px] px-1.5 py-0.2 rounded font-semibold ${
+                userRole === 'admin' ? 'bg-emerald-900 text-emerald-200' : 'bg-rose-950 text-rose-300 border border-rose-800/60'
+              }`}>
+                {userRole === 'admin' ? 'Admin' : 'Admin Only'}
+              </span>
+            </button>
+          )}
         </div>
 
         {/* Body content */}

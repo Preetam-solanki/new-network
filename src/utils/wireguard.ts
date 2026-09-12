@@ -1,4 +1,5 @@
 import QRCode from 'qrcode';
+import { Network, Peer, WanHostEntry } from '../types';
 
 // Base64 curve25519 style mock generator (32 bytes = 44 base64 chars ending with =)
 export function generateWireGuardKey(): string {
@@ -66,4 +67,68 @@ export function formatBytes(bytes: number): string {
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+export function generateWanHostsFile(
+  network: Network,
+  peers: Peer[],
+  customEntries: WanHostEntry[] = []
+): string {
+  const timestamp = new Date().toISOString();
+  const netSlug = network.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+
+  let out = `# ==============================================================================
+# V-WAN MASTER HOSTS RESOLUTION FILE (ADMINISTRATIVE WAN RESOLVER)
+# Network Name   : ${network.name}
+# Subnet CIDR    : ${network.subnetCidr}
+# Interface      : ${network.interfaceName} (Gateway VIP: ${network.gatewayIp})
+# Exported At    : ${timestamp}
+# Access Level   : NETWORK ADMINISTRATOR ONLY
+# Description    : Maps all virtual peer endpoints, gateways, and game servers.
+# ==============================================================================
+
+127.0.0.1       localhost
+::1             localhost ip6-localhost ip6-loopback
+
+# ------------------------------------------------------------------------------
+# 1. CORE WAN GATEWAY & DERP RELAY SERVICES
+# ------------------------------------------------------------------------------
+${network.gatewayIp.padEnd(16)} gateway.vwan.internal ${netSlug}-gw vwan-gateway
+${network.gatewayIp.padEnd(16)} stun.vwan.internal derp-relay.vwan.internal smb.vwan.internal
+
+# ------------------------------------------------------------------------------
+# 2. ACTIVE VIRTUAL LAN PEERS & CLIENT NODES (${peers.length} NODES)
+# ------------------------------------------------------------------------------
+`;
+
+  peers.forEach((peer) => {
+    const peerSlug = peer.name
+      .toLowerCase()
+      .replace(/\s*\(.*?\)/g, '')
+      .replace(/\[.*?\]/g, '')
+      .trim()
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+    const domain = `${peerSlug}.${netSlug}.vwan`;
+    const hostComment = `# ${peer.platform.toUpperCase()} | ${peer.connectionMode === 'p2p' ? 'P2P Direct' : 'DERP Relay'} | ${peer.status}`;
+    out += `${peer.virtualIp.padEnd(16)} ${domain.padEnd(32)} ${peerSlug.padEnd(20)} ${hostComment}\n`;
+  });
+
+  if (customEntries.length > 0) {
+    out += `\n# ------------------------------------------------------------------------------
+# 3. CUSTOM WAN DNS & DEDICATED GAME SERVER ALIASES (${customEntries.length} ENTRIES)
+# ------------------------------------------------------------------------------\n`;
+    customEntries.forEach((entry) => {
+      const aliasStr = entry.aliases.length > 0 ? entry.aliases.join(' ') : '';
+      out += `${entry.ip.padEnd(16)} ${entry.hostname.padEnd(32)} ${aliasStr.padEnd(20)} # ${entry.description || 'Custom'}\n`;
+    });
+  }
+
+  out += `\n# ==============================================================================
+# End of V-WAN Master Hosts File
+# ==============================================================================
+`;
+
+  return out;
 }

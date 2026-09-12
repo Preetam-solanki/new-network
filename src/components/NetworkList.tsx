@@ -14,31 +14,36 @@ import {
   Lock,
   ArrowUpRight,
   ArrowDownLeft,
-  Share2
+  Share2,
+  FileText
 } from 'lucide-react';
-import { Network } from '../types';
+import { Network, UserRole } from '../types';
 
 interface NetworkListProps {
   networks: Network[];
   selectedNetworkId: string;
+  userRole: UserRole;
   onSelectNetwork: (id: string) => void;
   onToggleConnect: (id: string) => void;
   onOpenCreate: () => void;
   onOpenJoin: () => void;
   onOpenConfig: (network: Network) => void;
   onOpenAcl: (network: Network) => void;
+  onOpenWanHosts: (network: Network) => void;
   onDeleteNetwork: (id: string) => void;
 }
 
 export const NetworkList: React.FC<NetworkListProps> = ({
   networks,
   selectedNetworkId,
+  userRole,
   onSelectNetwork,
   onToggleConnect,
   onOpenCreate,
   onOpenJoin,
   onOpenConfig,
   onOpenAcl,
+  onOpenWanHosts,
   onDeleteNetwork,
 }) => {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
@@ -198,6 +203,22 @@ export const NetworkList: React.FC<NetworkListProps> = ({
                     title="Export WireGuard Config / Mobile QR Code"
                   >
                     <Key className="w-4 h-4" />
+                  </button>
+
+                  {/* WAN Host File (Admin vs Restricted) */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpenWanHosts(net);
+                    }}
+                    className={`p-2 rounded-lg border transition-colors cursor-pointer ${
+                      userRole === 'admin'
+                        ? 'bg-emerald-950/70 text-emerald-400 border-emerald-800 hover:bg-emerald-900/80'
+                        : 'bg-slate-800 hover:bg-slate-700 text-slate-400 border-slate-700'
+                    }`}
+                    title={userRole === 'admin' ? 'Open Master WAN Hosts File (/etc/hosts)' : 'WAN Host File (Admin Only)'}
+                  >
+                    <FileText className="w-4 h-4" />
                   </button>
 
                   {/* ACL Firewall Rules */}

@@ -1,4 +1,4 @@
-import { Network, Peer, LanGameBroadcast, SharedFile } from './types';
+import { Network, Peer, LanGameBroadcast, SharedFile, UserRole } from './types';
 import { INITIAL_NETWORKS, MOCK_PEERS_BY_NETWORK, INITIAL_LAN_GAMES, INITIAL_SHARED_FILES } from './mockData';
 
 const NETWORKS_KEY = 'vwan_networks_v1';
@@ -7,6 +7,7 @@ const GAMES_KEY = 'vwan_games_v1';
 const FILES_KEY = 'vwan_files_v1';
 const USERNAME_KEY = 'vwan_user_name_v1';
 const CLIENT_OS_KEY = 'vwan_client_os_v1';
+const USER_ROLE_KEY = 'vwan_user_role_v1';
 
 export function loadNetworks(): Network[] {
   try {
@@ -94,6 +95,14 @@ export function getStoredClientPlatform(): 'windows' | 'linux' | 'android' | 'io
 
 export function setStoredClientPlatform(os: 'windows' | 'linux' | 'android' | 'ios' | 'macos') {
   localStorage.setItem(CLIENT_OS_KEY, os);
+}
+
+export function getStoredUserRole(): UserRole {
+  return (localStorage.getItem(USER_ROLE_KEY) as UserRole) || 'user';
+}
+
+export function setStoredUserRole(role: UserRole) {
+  localStorage.setItem(USER_ROLE_KEY, role);
 }
 
 export function resetToDefaults(): {

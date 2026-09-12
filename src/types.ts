@@ -1,6 +1,17 @@
 export type ClientPlatform = 'windows' | 'linux' | 'android' | 'ios' | 'macos';
 
+export type UserRole = 'admin' | 'user';
+
 export type ConnectionMode = 'p2p' | 'relay';
+
+export interface WanHostEntry {
+  id: string;
+  ip: string;
+  hostname: string;
+  aliases: string[];
+  description?: string;
+  isGateway?: boolean;
+}
 
 export interface Peer {
   id: string;

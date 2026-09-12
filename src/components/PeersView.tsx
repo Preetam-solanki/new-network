@@ -14,25 +14,31 @@ import {
   ArrowUpRight, 
   ArrowDownLeft,
   Server,
-  FolderOpen
+  FolderOpen,
+  FileText,
+  Lock
 } from 'lucide-react';
-import { Peer, Network, ClientPlatform } from '../types';
+import { Peer, Network, ClientPlatform, UserRole } from '../types';
 import { formatBytes } from '../utils/wireguard';
 
 interface PeersViewProps {
   network: Network;
   peers: Peer[];
+  userRole: UserRole;
   onOpenPing: (peer: Peer) => void;
   onOpenConfig: () => void;
   onOpenAcl: () => void;
+  onOpenWanHosts: () => void;
 }
 
 export const PeersView: React.FC<PeersViewProps> = ({
   network,
   peers,
+  userRole,
   onOpenPing,
   onOpenConfig,
   onOpenAcl,
+  onOpenWanHosts,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterPlatform, setFilterPlatform] = useState<string>('all');
@@ -113,7 +119,27 @@ export const PeersView: React.FC<PeersViewProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={onOpenWanHosts}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors cursor-pointer flex items-center gap-1.5 ${
+                userRole === 'admin'
+                  ? 'bg-emerald-950/80 border-emerald-700 text-emerald-300 hover:bg-emerald-900/80'
+                  : 'bg-slate-800 hover:bg-slate-750 text-slate-300 border-slate-700'
+              }`}
+              title="View WAN Master Host Resolution Table"
+            >
+              <FileText className="w-3.5 h-3.5 text-emerald-400" />
+              <span>WAN Host File</span>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded font-bold ${
+                userRole === 'admin'
+                  ? 'bg-emerald-900 text-emerald-200'
+                  : 'bg-rose-950 text-rose-300 border border-rose-850'
+              }`}>
+                {userRole === 'admin' ? 'Admin' : 'Admin Only'}
+              </span>
+            </button>
+
             <button
               onClick={onOpenAcl}
               className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition-colors cursor-pointer flex items-center gap-1.5"

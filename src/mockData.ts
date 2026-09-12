@@ -397,6 +397,32 @@ export const INITIAL_LAN_GAMES: LanGameBroadcast[] = [
 
 export const INITIAL_SHARED_FILES: SharedFile[] = [
   {
+    id: 'file-self-1',
+    networkId: 'net-vwan-valheim',
+    name: 'my_viking_custom_longhouse.vbuild',
+    sizeBytes: 1240000, // ~1.2 MB
+    uploaderName: 'Your-Laptop (This Device)',
+    uploaderVirtualIp: '10.147.19.5',
+    uploadedAt: 'Today, 08:30',
+    sha256: '7ca3e198fa04b327b952f109e23091bb720c9182',
+    mimeType: 'application/octet-stream',
+    category: 'save_file',
+    downloadCount: 3
+  },
+  {
+    id: 'file-self-2',
+    networkId: 'net-vwan-minecraft',
+    name: 'my_redstone_schematic_vault.schem',
+    sizeBytes: 680000,
+    uploaderName: 'Your-Laptop (This Device)',
+    uploaderVirtualIp: '10.10.88.12',
+    uploadedAt: 'Yesterday, 14:15',
+    sha256: 'a19c3b881ef0321a48c900e57ba82f3491024bc3',
+    mimeType: 'application/octet-stream',
+    category: 'save_file',
+    downloadCount: 1
+  },
+  {
     id: 'file-1',
     networkId: 'net-vwan-valheim',
     name: 'ValheimPlus-v0.9.9.11-ClientPatch.zip',

@@ -2,6 +2,7 @@ import React from 'react';
 import { 
   Network as NetworkIcon, 
   ShieldCheck, 
+  ShieldAlert,
   Wifi, 
   Monitor, 
   Smartphone, 
@@ -11,9 +12,11 @@ import {
   Radio, 
   FolderOpen,
   Sliders,
-  Laptop
+  Laptop,
+  User,
+  FileText
 } from 'lucide-react';
-import { Network, ClientPlatform } from '../types';
+import { Network, ClientPlatform, UserRole } from '../types';
 
 interface NavbarProps {
   activeTab: 'networks' | 'directory' | 'lan_games' | 'files' | 'architecture' | 'acls';
@@ -21,6 +24,9 @@ interface NavbarProps {
   networks: Network[];
   clientPlatform: ClientPlatform;
   setClientPlatform: (os: ClientPlatform) => void;
+  userRole: UserRole;
+  onToggleUserRole: () => void;
+  onOpenWanHosts: () => void;
   isMobilePreview: boolean;
   setIsMobilePreview: (val: boolean) => void;
   onOpenCreate: () => void;
@@ -33,6 +39,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   networks,
   clientPlatform,
   setClientPlatform,
+  userRole,
+  onToggleUserRole,
+  onOpenWanHosts,
   isMobilePreview,
   setIsMobilePreview,
   onOpenCreate,
@@ -101,8 +110,37 @@ export const Navbar: React.FC<NavbarProps> = ({
           )}
         </div>
 
-        {/* Client OS Target Switcher & Mobile Simulator Toggle */}
+        {/* Role Switcher & Client OS Target Switcher & Mobile Simulator Toggle */}
         <div className="flex items-center gap-2">
+          {/* User Role Switcher */}
+          <button
+            onClick={onToggleUserRole}
+            className={`px-2.5 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm ${
+              userRole === 'admin'
+                ? 'bg-emerald-950/80 border-emerald-700/80 text-emerald-300 hover:bg-emerald-900/80'
+                : 'bg-slate-850 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white'
+            }`}
+            title={`Current Role: ${userRole === 'admin' ? 'Network Administrator' : 'Standard LAN User'}. Click to toggle role.`}
+          >
+            {userRole === 'admin' ? (
+              <>
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Admin Mode</span>
+                <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-900 text-emerald-200 uppercase">
+                  Full WAN
+                </span>
+              </>
+            ) : (
+              <>
+                <User className="w-3.5 h-3.5 text-slate-400" />
+                <span>User Mode</span>
+                <span className="text-[9px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 uppercase">
+                  LAN Only
+                </span>
+              </>
+            )}
+          </button>
+
           {/* OS Switcher dropdown/pills */}
           <div className="flex items-center gap-1 bg-slate-800/90 p-1 rounded-lg border border-slate-700 text-xs">
             <span className="text-slate-400 text-[11px] px-1 hidden sm:inline flex items-center gap-1">
@@ -216,6 +254,27 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <Server className="w-3.5 h-3.5 text-indigo-400" />
               <span>Go Control Plane & DERP Hub</span>
+            </button>
+
+            {/* WAN Host File Action Button */}
+            <button
+              onClick={onOpenWanHosts}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap ${
+                userRole === 'admin'
+                  ? 'bg-emerald-950/70 border border-emerald-800/80 text-emerald-300 hover:bg-emerald-900/80'
+                  : 'bg-slate-850 border border-slate-700/80 text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+              title={userRole === 'admin' ? 'Open Master WAN Hosts File (/etc/hosts)' : 'WAN Host File (Restricted to Admin - Click to verify)'}
+            >
+              <FileText className="w-3.5 h-3.5 text-emerald-400" />
+              <span>WAN Host File</span>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${
+                userRole === 'admin'
+                  ? 'bg-emerald-900 text-emerald-200'
+                  : 'bg-rose-950 text-rose-300 border border-rose-800/60'
+              }`}>
+                {userRole === 'admin' ? 'Admin' : 'Restricted'}
+              </span>
             </button>
           </div>
 
