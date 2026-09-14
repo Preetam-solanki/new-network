@@ -106,6 +106,15 @@ Four built-in firewall presets to secure virtual traffic:
 │   │   └── MobileFrame.tsx              # Mobile simulator frame for testing mobile UI
 │   └── utils/
 │       └── wireguard.ts       # WireGuard key generation, hosts file builder, QR code logic
+├── vwan_python/               # 🐍 Standalone Python 3 Edition of the entire platform
+│   ├── models.py              # Dataclasses (Network, Peer, Game, File, Host, ACL)
+│   ├── wireguard.py           # Curve25519 keys, wg-quick & /etc/hosts builders
+│   ├── storage.py             # JSON persistence & seed data
+│   ├── server.py              # HTTP server, REST API & embedded Web GUI
+│   ├── cli.py                 # Interactive command-line utility
+│   ├── main.py                # Runnable entrypoint
+│   ├── tests/test_vwan.py     # Unit tests for WireGuard, RBAC & file isolation
+│   └── README.md              # Python edition documentation
 ```
 
 ---
@@ -296,10 +305,10 @@ curl http://gameserver:8080/health
 ## 🛠️ Development & Running
 
 ### Prerequisites
-- Node.js 18+
-- npm or yarn
+- **Web Frontend**: Node.js 18+ and npm / yarn
+- **Python Engine**: Python 3.10 or higher (Zero external dependencies required; uses standard library)
 
-### Installation
+### ⚛️ Frontend Setup & Running (React / Vite)
 ```bash
 # Install dependencies
 npm install
@@ -309,6 +318,92 @@ npm run dev
 
 # Compile and check for errors
 npm run build
+```
+
+---
+
+### 🐍 Python Edition Setup & Running (`vwan_python`)
+
+The Python edition is located in `/vwan_python`. It is a self-contained, zero-dependency control plane, REST API, Web GUI, and CLI utility.
+
+#### 1. Setup Virtual Environment (Recommended)
+```bash
+# Create a virtual environment
+python3 -m venv venv
+
+# Activate on Linux / macOS:
+source venv/bin/activate
+
+# Activate on Windows (Command Prompt / PowerShell):
+.\venv\Scripts\activate
+```
+
+#### 2. Verify Python Version
+```bash
+python3 --version
+# Output should be Python 3.10.0 or higher
+```
+
+#### 3. Start the Web Dashboard & REST API
+The built-in HTTP server provides an embedded web GUI and REST API endpoints:
+```bash
+# Launch on default port 8080
+python3 -m vwan_python.cli serve --port 8080
+
+# Or launch directly using the main entrypoint:
+python3 vwan_python/main.py serve --port 8080
+```
+Open your browser and navigate to: **`http://localhost:8080`**
+
+#### 4. Using the Interactive Command-Line Tool (CLI)
+You can manage virtual networks, peers, roles, and files directly from your terminal:
+
+```bash
+# 1. List all virtual adapters and active subnets
+python3 -m vwan_python.cli list-networks
+
+# 2. Inspect connected peers in a specific VLAN
+python3 -m vwan_python.cli list-peers --network net-vwan-valheim
+
+# 3. Export a WireGuard-compliant client configuration file
+python3 -m vwan_python.cli export-wg --network net-vwan-valheim --out vwan0.conf
+
+# 4. Export the Master WAN Host File (/etc/hosts) - Administrator Only
+python3 -m vwan_python.cli export-hosts --network net-vwan-valheim --out vwan0.hosts
+
+# 5. Add a custom DNS host mapping (Dedicated game server, NAS, etc.)
+python3 -m vwan_python.cli add-host \
+  --ip 10.147.19.100 \
+  --hostname dedicated-gameserver.vwan.lan \
+  --aliases "gameserver,valheim-box" \
+  --description "Dedicated 24/7 Game Server VM"
+
+# 6. Test Role-Based Access Control & LAN File Isolation
+# Switch to Standard User:
+python3 -m vwan_python.cli set-role user
+
+# Attempting to export WAN Host file as user (Blocked):
+python3 -m vwan_python.cli export-hosts --network net-vwan-valheim
+# Returns: [Access Denied] The WAN Host File is restricted to Administrator role.
+
+# Attempting to download a remote peer's file (Blocked):
+python3 -m vwan_python.cli download-file --id file-2
+# Returns: [LAN File Isolation Policy Violation] You cannot access files uploaded by remote peer.
+
+# Download your own file (Allowed):
+python3 -m vwan_python.cli download-file --id file-1
+
+# Elevate back to Administrator:
+python3 -m vwan_python.cli set-role admin
+
+# 7. Diagnostic ping across the virtual mesh
+python3 -m vwan_python.cli ping --peer-id peer-2
+```
+
+#### 5. Running the Python Automated Tests
+The Python engine includes a unit test suite testing WireGuard key generation, configuration compilation, WAN host resolution, and security policies:
+```bash
+PYTHONPATH=. python3 -m unittest vwan_python/tests/test_vwan.py
 ```
 
 ---

@@ -1,0 +1,337 @@
+{
+  "user_role": "admin",
+  "current_user_ip": "10.147.19.14",
+  "current_user_name": "Your-Laptop (This Device)",
+  "networks": [
+    {
+      "id": "net-vwan-valheim",
+      "name": "Valheim Dedicated & Co-Op EU",
+      "subnet_cidr": "10.147.19.0/24",
+      "interface_name": "vwan0",
+      "gateway_ip": "10.147.19.1",
+      "encryption": "Curve25519 / ChaCha20",
+      "is_connected": true,
+      "peers_count": 5,
+      "max_peers": 64,
+      "is_public": true,
+      "invite_code": "VWAN-VAL-8821",
+      "assigned_virtual_ip": "10.147.19.14",
+      "acl_preset": "gaming_safe",
+      "bytes_rx": 412000000,
+      "bytes_tx": 198000000,
+      "password": null,
+      "category": "Gaming",
+      "description": "Public EU server for dedicated Valheim co-op sessions and boss raids.",
+      "rules": [
+        {
+          "id": "rule-1",
+          "name": "Allow Game UDP",
+          "action": "ACCEPT",
+          "protocol": "UDP",
+          "port_range": "2456-2458",
+          "source_cidr": "10.147.19.0/24",
+          "description": "Permit Valheim game traffic"
+        },
+        {
+          "id": "rule-2",
+          "name": "Allow ICMP Ping",
+          "action": "ACCEPT",
+          "protocol": "ICMP",
+          "port_range": "ALL",
+          "source_cidr": "10.147.19.0/24",
+          "description": "Permit echo requests"
+        },
+        {
+          "id": "rule-3",
+          "name": "Block NetBIOS",
+          "action": "DROP",
+          "protocol": "UDP",
+          "port_range": "137-139",
+          "source_cidr": "10.147.19.0/24",
+          "description": "Block Windows NetBIOS noise"
+        }
+      ]
+    },
+    {
+      "id": "net-vwan-minecraft",
+      "name": "Minecraft Survival 1.20.4 SMP",
+      "subnet_cidr": "10.10.5.0/24",
+      "interface_name": "vwan1",
+      "gateway_ip": "10.10.5.1",
+      "encryption": "Curve25519 / ChaCha20",
+      "is_connected": false,
+      "peers_count": 8,
+      "max_peers": 32,
+      "is_public": true,
+      "invite_code": "VWAN-MC-5591",
+      "assigned_virtual_ip": "10.10.5.12",
+      "acl_preset": "gaming_safe",
+      "bytes_rx": 89000000,
+      "bytes_tx": 42000000,
+      "password": null,
+      "category": "Gaming",
+      "description": "Vanilla+ survival SMP multiplayer world.",
+      "rules": [
+        {
+          "id": "rule-mc-1",
+          "name": "Allow Minecraft TCP",
+          "action": "ACCEPT",
+          "protocol": "TCP",
+          "port_range": "25565",
+          "source_cidr": "10.10.5.0/24",
+          "description": "Permit default Minecraft server port"
+        },
+        {
+          "id": "rule-mc-2",
+          "name": "Allow Voice Chat UDP",
+          "action": "ACCEPT",
+          "protocol": "UDP",
+          "port_range": "24454",
+          "source_cidr": "10.10.5.0/24",
+          "description": "Simple Voice Chat plugin port"
+        }
+      ]
+    },
+    {
+      "id": "net-vwan-homelab",
+      "name": "Homelab SSH & NAS Cluster",
+      "subnet_cidr": "10.200.0.0/24",
+      "interface_name": "vwan2",
+      "gateway_ip": "10.200.0.1",
+      "encryption": "Curve25519 / ChaCha20",
+      "is_connected": true,
+      "peers_count": 3,
+      "max_peers": 16,
+      "is_public": false,
+      "invite_code": "VWAN-LAB-4412",
+      "assigned_virtual_ip": "10.200.0.2",
+      "acl_preset": "dev_ssh",
+      "bytes_rx": 1200000000,
+      "bytes_tx": 840000000,
+      "password": null,
+      "category": "Infrastructure",
+      "description": "Secure private tunnel for remote server management and NAS backups.",
+      "rules": [
+        {
+          "id": "rule-lab-1",
+          "name": "Allow SSH",
+          "action": "ACCEPT",
+          "protocol": "TCP",
+          "port_range": "22",
+          "source_cidr": "10.200.0.0/24",
+          "description": "Permit SSH management"
+        },
+        {
+          "id": "rule-lab-2",
+          "name": "Allow HTTPS",
+          "action": "ACCEPT",
+          "protocol": "TCP",
+          "port_range": "443",
+          "source_cidr": "10.200.0.0/24",
+          "description": "Permit web UI dashboards"
+        }
+      ]
+    }
+  ],
+  "peers": {
+    "net-vwan-valheim": [
+      {
+        "id": "peer-1",
+        "network_id": "net-vwan-valheim",
+        "name": "Your-Laptop (This Device)",
+        "platform": "linux",
+        "virtual_ip": "10.147.19.14",
+        "endpoint": "192.168.1.105:51820",
+        "is_online": true,
+        "connection_type": "direct_p2p",
+        "latency_ms": 12,
+        "jitter_ms": 1,
+        "packet_loss_pct": 0.0,
+        "public_key": "k7L8m9N0p1Q2r3S4t5U6v7W8x9Y0z1A2b3C4d5E6f7G=",
+        "last_handshake": "2 seconds ago",
+        "transfer_rx": "198 MB",
+        "transfer_tx": "412 MB"
+      },
+      {
+        "id": "peer-2",
+        "network_id": "net-vwan-valheim",
+        "name": "Viking-Host-PC",
+        "platform": "windows",
+        "virtual_ip": "10.147.19.22",
+        "endpoint": "84.115.42.18:51820",
+        "is_online": true,
+        "connection_type": "direct_p2p",
+        "latency_ms": 18,
+        "jitter_ms": 2,
+        "packet_loss_pct": 0.0,
+        "public_key": "A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8S9t0U1V=",
+        "last_handshake": "14 seconds ago",
+        "transfer_rx": "340 MB",
+        "transfer_tx": "890 MB"
+      },
+      {
+        "id": "peer-3",
+        "network_id": "net-vwan-valheim",
+        "name": "Archer-MacBook",
+        "platform": "macos",
+        "virtual_ip": "10.147.19.38",
+        "endpoint": "194.25.10.92:51820",
+        "is_online": true,
+        "connection_type": "derp_relay",
+        "latency_ms": 45,
+        "jitter_ms": 4,
+        "packet_loss_pct": 0.2,
+        "public_key": "Z9y8X7w6V5u4T3s2R1q0P9o8N7m6L5k4J3i2H1g0F9E=",
+        "last_handshake": "40 seconds ago",
+        "transfer_rx": "120 MB",
+        "transfer_tx": "110 MB"
+      },
+      {
+        "id": "peer-4",
+        "network_id": "net-vwan-valheim",
+        "name": "Shield-Rig-Win11",
+        "platform": "windows",
+        "virtual_ip": "10.147.19.45",
+        "endpoint": "212.58.244.70:51820",
+        "is_online": true,
+        "connection_type": "direct_p2p",
+        "latency_ms": 22,
+        "jitter_ms": 3,
+        "packet_loss_pct": 0.0,
+        "public_key": "m1N2o3P4q5R6s7T8u9V0w1X2y3Z4a5B6c7D8e9F0g1H=",
+        "last_handshake": "1 minute ago",
+        "transfer_rx": "88 MB",
+        "transfer_tx": "75 MB"
+      },
+      {
+        "id": "peer-5",
+        "network_id": "net-vwan-valheim",
+        "name": "Steve-Phone-Android",
+        "platform": "android",
+        "virtual_ip": "10.147.19.51",
+        "endpoint": "178.62.204.11:51820",
+        "is_online": false,
+        "connection_type": "derp_relay",
+        "latency_ms": 68,
+        "jitter_ms": 8,
+        "packet_loss_pct": 1.5,
+        "public_key": "x1Y2z3A4b5C6d7E8f9G0h1I2j3K4l5M6n7O8p9Q0r1S=",
+        "last_handshake": "12 minutes ago",
+        "transfer_rx": "15 MB",
+        "transfer_tx": "12 MB"
+      }
+    ]
+  },
+  "games": [
+    {
+      "id": "game-1",
+      "network_id": "net-vwan-valheim",
+      "game_title": "Valheim",
+      "host_peer_name": "Viking-Host-PC",
+      "virtual_socket": "10.147.19.22:2456",
+      "game_mode": "Survival Co-op (Mistlands)",
+      "players_current": 4,
+      "players_max": 10,
+      "ping_ms": 18,
+      "broadcast_port": 2456,
+      "map_name": "OdinWorld_Seed99",
+      "is_password_protected": true
+    },
+    {
+      "id": "game-2",
+      "network_id": "net-vwan-valheim",
+      "game_title": "Counter-Strike 2",
+      "host_peer_name": "Shield-Rig-Win11",
+      "virtual_socket": "10.147.19.45:27015",
+      "game_mode": "5v5 Competitive LAN",
+      "players_current": 6,
+      "players_max": 10,
+      "ping_ms": 22,
+      "broadcast_port": 27015,
+      "map_name": "de_inferno",
+      "is_password_protected": false
+    },
+    {
+      "id": "game-3",
+      "network_id": "net-vwan-minecraft",
+      "game_title": "Minecraft Java",
+      "host_peer_name": "Steve-Host",
+      "virtual_socket": "10.10.5.1:25565",
+      "game_mode": "Survival SMP 1.20.4",
+      "players_current": 8,
+      "players_max": 20,
+      "ping_ms": 25,
+      "broadcast_port": 25565,
+      "map_name": "Hermitcraft_Style",
+      "is_password_protected": false
+    }
+  ],
+  "files": [
+    {
+      "id": "file-1",
+      "network_id": "net-vwan-valheim",
+      "name": "ValheimPlus_v0.9.9_Modpack.zip",
+      "size_mb": 48.5,
+      "uploaded_by_peer": "Your-Laptop (This Device)",
+      "uploaded_by_ip": "10.147.19.14",
+      "category": "mod",
+      "download_count": 15,
+      "uploaded_at": "2 hours ago"
+    },
+    {
+      "id": "file-2",
+      "network_id": "net-vwan-valheim",
+      "name": "Odin_World_Backup_Day350.db",
+      "size_mb": 122.0,
+      "uploaded_by_peer": "Viking-Host-PC",
+      "uploaded_by_ip": "10.147.19.22",
+      "category": "map",
+      "download_count": 5,
+      "uploaded_at": "Yesterday"
+    },
+    {
+      "id": "file-3",
+      "network_id": "net-vwan-valheim",
+      "name": "Server_AutoRestart_Script.sh",
+      "size_mb": 0.1,
+      "uploaded_by_peer": "Your-Laptop (This Device)",
+      "uploaded_by_ip": "10.147.19.14",
+      "category": "config",
+      "download_count": 8,
+      "uploaded_at": "3 days ago"
+    },
+    {
+      "id": "file-4",
+      "network_id": "net-vwan-valheim",
+      "name": "Remote_Telemetry_Report.pdf",
+      "size_mb": 2.4,
+      "uploaded_by_peer": "Archer-MacBook",
+      "uploaded_by_ip": "10.147.19.38",
+      "category": "document",
+      "download_count": 2,
+      "uploaded_at": "5 days ago"
+    }
+  ],
+  "custom_hosts": [
+    {
+      "id": "custom-1",
+      "ip": "10.147.19.100",
+      "hostname": "dedicated-gameserver.vwan.lan",
+      "aliases": [
+        "gameserver",
+        "valheim-box"
+      ],
+      "description": "Dedicated 24/7 Game Server VM"
+    },
+    {
+      "id": "custom-2",
+      "ip": "10.147.19.200",
+      "hostname": "nas-storage.vwan.lan",
+      "aliases": [
+        "nas",
+        "backup-vault"
+      ],
+      "description": "TrueNAS Virtual Storage Target"
+    }
+  ]
+}
