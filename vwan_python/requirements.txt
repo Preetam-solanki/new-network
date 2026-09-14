@@ -1,0 +1,5 @@
+# V-WAN Python Edition Requirements
+# Note: The core engine is 100% compatible with Python 3.10+ standard library (zero external dependencies required).
+# Optional packages for enhanced features:
+# cryptography>=41.0.0   # Hardware-accelerated Curve25519 key generation
+# requests>=2.31.0       # Client script testing
